@@ -141,7 +141,7 @@ jobs:
           kubectl get pods -l app=python-app -o wide
 
       - name: Deployment Summary
-        run: |
+        run: | 
           echo "✅ Docker image built and pushed successfully!"
           echo "📦 Image: ${{ env.IMAGE_NAME }}:${{ needs.build-push.outputs.image_tag }}"
           echo "🏷️  Tag: ${{ needs.build-push.outputs.image_tag }}"
