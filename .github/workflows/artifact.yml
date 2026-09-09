@@ -1,0 +1,34 @@
+name: Artifact
+
+on: 
+    workflow_dispatch:
+
+jobs:
+    artifact-producer:
+       name: Artifact Producer
+       runs-on: ubuntu-latest
+       steps:
+         - name: Create artifact
+           run: |
+             echo "This is a sample artifact" > artifact.txt
+             echo "Generated on $(date)" >> artifact.txt
+
+         - name: Upload artifact
+           uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+           with:
+              name: sample-artifact
+              path: artifact.txt
+
+    artifact-consumer:
+       name: Artifact Consumer
+       runs-on: ubuntu-latest
+       needs: artifact-producer
+       steps:
+         - name: Download artifact
+           uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+           with:
+              name: sample-artifact
+
+         - name: Display artifact content
+           run: |
+             cat artifact.txt

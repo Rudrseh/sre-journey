@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: hello
+      tier: frontend
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: hello
+        tier: frontend
+        track: stable
+    spec:
+      containers:
+       - name: nginx
+         image: "gcr.io/google-samples/hello-frontend:1.0"
+         lifecycle:
+          preStop:
+            exec:
+              command: ["/usr/bin/nginx", "-s", "quit"]

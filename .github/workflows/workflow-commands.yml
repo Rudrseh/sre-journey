@@ -1,0 +1,71 @@
+name: Workflow Commands
+
+on:
+    workflow_dispatch:
+
+jobs:
+    workflow-commands:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout Source code
+          uses:  actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+
+        - name: Log anotations
+          run: |
+            # Debug output (only visible when you enable debug logging)
+            echo "::debug::This is a debug message"
+
+            echo "::notice file=$file,line=23::By specifying a line (and optionally a column) the notice is linked to the source file"
+
+            echo "::warning title=Some Warning::A more detailed description of the warning"
+
+            # Fails the run visually, but does **not** stop execution (you should `exit 1` to stop execution)
+            echo "::error title=Some Error::A more detailed description of the error"
+
+        - name: Grouped Logs
+          run: |
+                echo "::group::This is a group"
+                echo "Inside the group"
+                echo "::endgroup::"
+
+        - name: Mask a value
+          env:
+            FOO: bar
+          run: |
+                echo "::add-mask::$FOO"
+                echo "FOO is $FOO"
+
+        - name: Stop and resume a workflow
+          run: |
+                marker=$(uuidgen)
+                echo "::stop-commands::$marker"
+                echo "::error:: this is *not* an error, but it will stop the workflow"
+                echo "::resume-commands::$marker"
+                echo "::notice:: this is a notice, and it will be printed"
+
+        - name: Set environment variables
+          run: |
+                echo "BUILD_ID=$(date +%s)" >> $GITHUB_ENV
+
+        - name: Set output variable
+          id: color-choice
+          run: |
+                echo "mychoice=red" >> $GITHUB_OUTPUT
+
+        - name: Append to step summary
+          run: |
+                echo "This is a summary of the step" >> $GITHUB_STEP_SUMMARY
+                echo "BUILD_ID: $BUILD_ID" >> $GITHUB_STEP_SUMMARY
+                echo "color: ${{ steps.set-output.outputs.myOutput }}" >> $GITHUB_STEP_SUMMARY
+
+        - name: Add custom path
+          run: |
+                echo "$HOME/.local/bin" >> $GITHUB_PATH
+                
+        - name: Use env, output and PATH
+          env:
+             CHOSEN_COLOR: ${{ steps.color-choice.outputs.mychoice }}
+          run: |
+              echo "The chosen color is $CHOSEN_COLOR"
+              echo "The build ID is $BUILD_ID"
+              echo "The path is $PATH"

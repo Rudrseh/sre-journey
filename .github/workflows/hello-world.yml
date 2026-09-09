@@ -1,0 +1,11 @@
+name: Hello-world
+
+on:
+  workflow_dispatch:
+
+jobs:
+  say-hello-to-bash:
+    runs-on: ubuntu-22.04
+    steps:
+     - run: echo "welcome to github action journey"
+    

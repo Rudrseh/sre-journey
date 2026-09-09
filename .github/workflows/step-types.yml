@@ -1,0 +1,20 @@
+name: Step Types
+
+on: 
+    workflow_dispatch:
+
+jobs:
+    step-types:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Shell 
+              run: echo "Running step types tests"
+
+            - name: Set up Python
+              run: print  ("Setting up Python environment")
+              shell: python
+
+            - name: Hello action
+              uses: actions/hello-world-docker-action@v1
+              with:
+                who-to-greet: 'Mona the Octocat'

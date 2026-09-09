@@ -1,0 +1,63 @@
+name: Caching
+
+on: 
+    workflow_dispatch:
+
+jobs:
+    action-cache:
+      name: prime demo cache
+      runs-on: ubuntu-latest
+      steps:
+        #Attempt to restore the cache
+        - name: Restore cache
+          id:  demo-cache
+          uses: actions/cache@638ed79f9dc94c1de1baef91bcab5edaa19451f4
+          with:
+            path: demo-cache
+            key: demo-cache_v1
+    
+        # papulate the cache if it was not restored
+        - name: Papulate cache
+          if: steps.demo-cache.outputs.cache-hit != 'true'
+          run: |
+            echo "Cache miss, populating cache..."
+            mkdir -p demo-cache
+            echo "This is a demo cache file." > demo-cache/demo.txt
+
+        # Save the cache
+        - name: Save cache
+          if: steps.demo-cache.outputs.cache-hit != 'true'
+          uses: actions/cache@638ed79f9dc94c1de1baef91bcab5edaa19451f4
+          with:
+            path: demo-cache
+            key: demo-cache_v1
+
+        - name: Verify cache
+          run: |
+            if [ -f demo-cache/demo.txt ]; then
+              echo "Cache file exists."
+            else
+              echo "Cache file does not exist."
+              exit 1
+            fi  
+
+
+# cache via actions/setup-node@v3
+    node-cache:
+      name: npm dependencies cache
+      runs-on: ubuntu-latest
+      defaults:
+        run: 
+           working-directory: Github-Actions/advanced-features/caching/minimal-node-project
+
+      steps:
+        - uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+        - uses: actions/setup-node@d7a11313b581b306c961b506cfc8971208bb03f6 # v4.4.0
+          with:
+            node-version: 20
+            cache: 'npm'
+            cache-dependency-path: Github-Actions/advanced-features/caching/minimal-node-project/package-lock.json
+        - name: Install dependencies
+          run: npm ci --prefer-offline  --no-audit --progress=false
+        - name: List First few modules
+          run: ls -l node_modules | head -n 10

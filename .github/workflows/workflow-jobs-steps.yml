@@ -1,0 +1,29 @@
+name: workflow, jobs, steps
+
+on: 
+   workflow_dispatch:
+    
+jobs:
+    job1:
+        runs-on: ubuntu-latest
+        steps:
+         - run: echo "This is step 1 of job 1"
+         - run: echo "This is step 2 of job 2"
+    
+    job2:
+        runs-on: ubuntu-latest
+        steps:
+          - run: echo "This is step 3 of job 3"
+          - run: echo "This is step 4 of job 4"
+
+    job3:
+        runs-on: ubuntu-latest
+        needs: [job1, job2]
+        steps:
+         - run: echo "Job 1 and 2 are completed, this is job 3"
+
+    job4:
+        runs-on: ubuntu-latest
+        needs: [job1, job2]
+        steps:
+         - run: echo "Job 3 and 4 are completed, this is job 4"

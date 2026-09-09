@@ -1,0 +1,48 @@
+name: Different runner types
+
+on: 
+    workflow_dispatch:
+
+jobs:
+  ubuntu-runner:
+    name: Ubuntu Runner
+    runs-on: ubuntu-latest
+    steps:
+      - name: runner info
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Runner Architecture: ${{ runner.arch }}"
+          echo "Runner Name: ${{ runner.name }}"
+
+  windows-runner:
+    name: Windows Runner
+    runs-on: windows-latest
+    steps:
+      - name: runner info
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Runner Architecture: ${{ runner.arch }}"
+          echo "Runner Name: ${{ runner.name }}"
+
+  macos-runner:  
+    name: macOS Runner
+    runs-on: macos-latest
+    steps:
+      - name: runner info
+        run: |
+            echo "Runner OS: ${{ runner.os }}"
+            echo "Runner Architecture: ${{ runner.arch }}"
+            echo "Runner Name: ${{ runner.name }}" 
+
+  alipe-container-runner:
+    name: Container Runner
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+    steps:
+      - name: runner info
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Runner Architecture: ${{ runner.arch }}"
+          echo "Runner Name: ${{ runner.name }}"
+          echo "cat /etc/os-release"
