@@ -93,7 +93,7 @@ jobs:
       - name: Build and push the image
         uses: docker/build-push-action@v6
         with:
-          context: ./python-k8s-app
+          context: .
           file: ./python-k8s-app/Dockerfile
           push: true
           tags: |
