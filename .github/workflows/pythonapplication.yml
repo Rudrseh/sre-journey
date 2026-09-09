@@ -30,14 +30,16 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
+        working-directory: ./python-k8s-app
         run: |
           python -m pip install --upgrade pip
           pip install pytest
-          pip install -r python-k8s-app/requirements.txt
+          pip install -r requirements.txt
 
       - name: Run tests
+        working-directory: ./python-k8s-app
         run: |
-          pytest tests/ -v || echo "No tests found or tests failed - continuing..."
+          pytest tests -v || echo "No tests found or tests failed - continuing..."
 
   build-push:
     needs: test
@@ -91,8 +93,8 @@ jobs:
       - name: Build and push the image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./python-k8s-app
+          file: ./python-k8s-app/Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.image_tag }}
@@ -122,23 +124,23 @@ jobs:
       - name: Update image tag in deployment manifest
         if: steps.check_kubectl.outputs.kubectl_available == 'true'
         run: |
-          sed -i "s|image: .*darshimage.*|image: ${{ env.IMAGE_NAME }}:${{ needs.build-push.outputs.image_tag }}|" k8s/Deployment.yml
+          sed -i "s|image: .*darshimage.*|image: ${{ env.IMAGE_NAME }}:${{ needs.build-push.outputs.image_tag }}|" python-k8s-app/K8s/Deployment.yml
 
       - name: Apply manifest to local cluster
         if: steps.check_kubectl.outputs.kubectl_available == 'true'
         run: |
-          kubectl apply -f k8s/Deployment.yml --validate=false
-          kubectl apply -f k8s/Service.yml --validate=false
+          kubectl apply -f python-k8s-app/K8s/Deployment.yml --validate=false
+          kubectl apply -f python-k8s-app/K8s/service.yml --validate=false
 
       - name: Wait for rollout to finish
         if: steps.check_kubectl.outputs.kubectl_available == 'true'
         run: |
-          kubectl rollout status Deployment/python-app --timeout=120s
+          kubectl rollout status Deployment/my-pythonapp-deployment --timeout=120s
 
       - name: Show resulting pods
         if: steps.check_kubectl.outputs.kubectl_available == 'true'
         run: |
-          kubectl get pods -l app=python-app -o wide
+          kubectl get pods -l app=my-app -o wide
 
       - name: Deployment Summary
         run: | 

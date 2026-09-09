@@ -19,11 +19,12 @@ spec:
       containers:
       - name: my-app-container
         image: rudreshayd/darshimage:v1.1.0
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
         env:
          - name: ENVIRONMENT
-           value: "development"
+           value: "dev"
         resources:
           requests:
             memory: "100Mi"
@@ -37,12 +38,16 @@ spec:
             port: 8000
           initialDelaySeconds: 5
           periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         livenessProbe:
           httpGet:
             path: /health
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
 
 
       
