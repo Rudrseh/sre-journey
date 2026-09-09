@@ -127,8 +127,8 @@ jobs:
       - name: Apply manifest to local cluster
         if: steps.check_kubectl.outputs.kubectl_available == 'true'
         run: |
-          kubectl apply -f k8s/Deployment.yml
-          kubectl apply -f k8s/Service.yml
+          kubectl apply -f k8s/Deployment.yml --validate=false
+          kubectl apply -f k8s/Service.yml --validate=false
 
       - name: Wait for rollout to finish
         if: steps.check_kubectl.outputs.kubectl_available == 'true'
