@@ -5,11 +5,12 @@ metadata:
   labels:
     app: python-app
 spec:
-  type: LoadBalancer
+  # type: LoadBalancer
+  type: NodePort  
   selector:
     app: python-app
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8000
+    NodePort: 30000
     name: http
