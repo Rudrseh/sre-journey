@@ -23,8 +23,8 @@ spec:
         ports:
         - containerPort: 8000
         env:
-         - name: ENVIRONMENT
-           value: "dev"
+        - name: DATABASE_URL
+          value: postgresql://myuser:mysecurepassword@postgres:5432/mydb
         resources:
           requests:
             memory: "100Mi"
