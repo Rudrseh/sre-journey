@@ -1,6 +1,8 @@
 name: name issue
 
 on:
+    workflow_dispatch:
+        
     issues:
         types:
             - opened
