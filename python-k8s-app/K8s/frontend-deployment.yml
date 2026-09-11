@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: my-app-container
-        image: rudreshayd/darshimage:v1.1.0
+        image: rudreshayd/darshimage:v1.1.4
         imagePullPolicy: Always
         ports:
         - containerPort: 80

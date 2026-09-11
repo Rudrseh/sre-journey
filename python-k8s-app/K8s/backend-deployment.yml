@@ -54,7 +54,7 @@ spec:
                done
       containers:
       - name: python-backend
-        image: rudreshayd/darshimage:v1.1.0
+        image: rudreshayd/darshimage:v1.1.3
         imagePullPolicy: always
         ports:
         - containerPort: 8000
