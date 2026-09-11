@@ -1,16 +1,17 @@
+# ClusterIP: Postgres is only reachable from inside the cluster (by the
+# backend), never exposed externally.
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
-  labels:
-    name: postgres
+  name: postgres-service
 spec:
-  clusterIP: None
+  type: ClusterIP
   selector:
     app: postgres
   ports:
-    - name: postgres
-      port: 5432
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
   
 
 

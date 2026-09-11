@@ -1,30 +1,68 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-pythonapp-deployment
+  name: python-backend
   labels:
-    app: my-app
+    app: python-backend
   annotations:
-    description: "This is a deployment for my-app"
+    description: "This is a deployment for python-backend"
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: my-app
+      app: python-backend
   template:
     metadata:
       labels:
-        app: my-app
+        app: python-backend
     spec:
+      # Waits for Postgres to accept connections before the main container
+      # starts, so pods don't crash-loop while the DB is still booting
+      # (e.g. right after `kubectl apply` on a fresh cluster).
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:16-alpine
+          env:
+            - name: PGHOST
+              valueFrom:
+                 configMapKeyRef:
+                   name: python-k8s-app-configmap
+                   value: DB_HOST
+            - name: PGPORT
+              valueFrom:
+                 configMapKeyRef:
+                   name: python-k8s-app-configmap
+                   value: DB_PORT
+
+            - name: PGUSER 
+              valueFrom:
+                 scretKeyRef:
+                   name: python-k8s-app-secrets
+                   value: DB_USER     
+            - name: PGPASSWORD
+              valueFrom:
+                 secretKeyRef:
+                   name: python-k8s-app-secrets
+                   value: DB_PASSWORD
+          command: 
+             - sh
+             - -c
+             - | 
+               until pg_isready - h "$PGHOST" -p "PGPORT" -U "PGUSER"; do
+                echo "Waiting for postgres at $PGHOST:$PGPORT....."
+                sleep 5
+               done
       containers:
-      - name: my-app-container
+      - name: python-backend
         image: rudreshayd/darshimage:v1.1.0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: always
         ports:
         - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          value: postgresql://myuser:mysecurepassword@postgres:5432/mydb
+        envFrom:
+          - configMapRef:
+               name: python-k8s-app-configmap
+          - secretRef: 
+               name: python-k8s-app-secrets
         resources:
           requests:
             memory: "100Mi"

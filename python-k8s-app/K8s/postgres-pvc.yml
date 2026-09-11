@@ -1,0 +1,15 @@
+# Requests durable storage for Postgres's data directory. As long as this PVC
+# exists, its data survives the Postgres pod being deleted, crashing, or
+# rescheduled — Kubernetes reattaches the same underlying volume to the new pod.
+# Deleting the PVC itself (or the PV it's bound to) does delete the data, so
+# never include "kubectl delete pvc" in routine redeploys.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes: 
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi 

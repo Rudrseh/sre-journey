@@ -1,9 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-   name: python-k8s-configmap
+   name: python-k8s-app-configmap
 data:
-  ENV: "dev"
+  APP_ENV: "dev"
   LOG_LEVEL: "INFO"
   APP_NAME: "python-k8s-app"
   FEATURE_GREETING: "true"
+  # Non-sensitive DB connection info. DB_HOST matches the Postgres Service
+  # name in k8s/postgres-service.yaml — Kubernetes DNS resolves it automatically.
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "appdb"

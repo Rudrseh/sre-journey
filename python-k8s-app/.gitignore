@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Never commit the real secrets file — only secret.example.yaml (placeholders) is tracked
+k8s/secret.yaml

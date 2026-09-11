@@ -2,26 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: react
+  name: react-frontend
+  label:
+    name: react-frontend
 spec:
   selector:
     matchLabels:
-      app: react
-  replicas: 1
+      app: react-frontend
+  replicas: 2
   template:
     metadata:
       labels:
-        app: react
+        app: react-frontend
     spec:
       containers:
       - name: my-app-container
         image: rudreshayd/darshimage:v1.1.0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
-        - containerPort: 3000
-        env:
-          - name: REACT_APP_API_CALL
-            value: https://backend:8000
+        - containerPort: 80
         resources:
           requests:
             memory: "100Mi"
@@ -31,16 +30,16 @@ spec:
             cpu: "256m"
         readinessProbe:
           httpGet: 
-            path: /health
-            port: 3000
+            path: /
+            port: 80
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
         livenessProbe:
           httpGet:
-            path: /health
-            port: 3000
+            path: /
+            port: 80
           initialDelaySeconds: 15
           periodSeconds: 20
           timeoutSeconds: 5
