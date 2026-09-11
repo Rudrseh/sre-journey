@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build 
 
 #----------Stage 2: Serve it with Nginx---------------
-FROM nginx: 1.27-alpine
+FROM nginx:1.27-alpine
 
 # Remove the default nginx welcome page 
 RUN rm /etc/nginx/conf.d/default.conf
