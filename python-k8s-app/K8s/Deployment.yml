@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-pythonapp-deployment
+  labels:
+    app: my-app
+  annotations:
+    description: "This is a deployment for my-app"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container
+        image: rudreshayd/darshimage:v1.1.0
+        ports:
+        - containerPort: 8000
+        env:
+         - name: ENVIRONMENT
+           value: "development"
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "128m"
+          limits:
+            memory: "250Mi"
+            cpu: "256m"
+        readinessProbe:
+          httpGet: 
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+
+
+      

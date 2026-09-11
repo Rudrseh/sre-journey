@@ -1,0 +1,110 @@
+name: Permission
+
+on:
+    workflow_dispatch:
+       inputs:
+            pr_number:
+                description: "PR number to test against"
+                required: true
+                type: number 
+
+# Permissions can be defined at the workflow or job level
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+
+################
+# Default Permissions
+################
+# permissions:
+#   contents: read
+#   packages: read
+################
+
+################
+# All Permission Types
+################
+# permissions:
+#   actions: read|write|none
+#   attestations: read|write|none
+#   checks: read|write|none
+#   contents: read|write|none
+#   deployments: read|write|none
+#   id-token: write|none
+#   issues: read|write|none
+#   models: read|none
+#   discussions: read|write|none
+#   packages: read|write|none
+#   pages: read|write|none
+#   pull-requests: read|write|none
+#   security-events: read|write|none
+#   statuses: read|write|none
+################
+
+jobs:
+    read-only-pr:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: read
+            issues: write
+        continue-on-error: true
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+
+            - name: List first open 5 PRs
+              run: gh pr list --limit 5
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Ensure label "read-only-test" does not exist
+              run: |
+               gh label create "read-only-test" --description "Read-only test marker" --color "ededed" || true
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Attempt to add label (expected to fail due to read-only permissions)
+              run: gh pr edit ${{ github.event.pull_request.pr_number }} --add-label "read-only-test"
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Confirm the failure of adding label
+              if: failure()
+              run: |
+                if [ $? -ne 0 ]; then
+                  echo "As expected, failed to add label due to read-only permissions."
+                else
+                  echo "Unexpectedly succeeded in adding label. Check permissions."
+                fi
+    write-pr:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
+
+            - name: List first open 5 PRs
+              run: gh pr list --limit 5
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Ensure label "write-test" does not exist
+              run: |
+               gh label create "write-test" --description "write test marker" --color "ededed" || true
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Add label to the PR (expected to succeed due to write permissions)
+              run: gh pr edit ${{ github.event.pull_request.number }} --add-label "write-test"
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Confirm the success of adding label
+              run: |
+                if [ $? -eq 0 ]; then
+                  echo "Successfully added label due to write permissions."
+                else
+                  echo "Failed to add label. Check permissions."
+                fi
+            

@@ -1,0 +1,28 @@
+name: Environment Variable
+
+on: 
+    workflow_dispatch:
+env: 
+    WORKFLOW_NAME: I_am_workflow_scoped 
+
+jobs:
+    job1:
+        runs-on: ubuntu-latest
+        env:
+            JOB_NAME: I_am_job_scoped
+        steps:
+            - name: Inspect scope 1 and step 2
+              env: 
+                 step_name: I_am_step_scoped
+              run: |
+                echo "Workflow Scoped Variable: $WORKFLOW_NAME"
+                echo "Job Scoped Variable: $JOB_NAME"
+                echo "Step Scoped Variable: $step_name" 
+    job2:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Inspect scope job 2 and step 2
+              run: |
+                echo "Workflow Scoped Variable: $WORKFLOW_NAME"
+                echo "Job Scope: ${FOO:-<UNSET>}"
+                echo "Step_Var: ${STEP_VAR:-<UNSET>}"

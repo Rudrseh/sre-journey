@@ -1,0 +1,72 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      args:
+      - NODE_ENV=development
+      context: backend
+      target: development
+    command: npm run start-watch
+    environment:
+      - DATABASE_DB=example
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=/run/secrets/db-password
+      - DATABASE_HOST=db
+      - NODE_ENV=development
+    secrets:
+      - db-password
+    ports:
+      - "80:80"
+      - "9229:9229"
+      - "9230:9230"
+    secrets:
+      - db_password
+    volumes:
+      - ./backend/src:/code/src:ro
+      - ./backend/package.json:/code/package.json
+      - ./backend/package-lock.json:/code/package-lock.json
+      - back-notused:/opt/app/node_modules
+    networks:
+      - public
+      - private
+    depends_on:
+      - db
+  
+  db:
+    image: mariadb:10.5 
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=/run/secrets/db_password
+      - MYSQL_DATABASE=backeddb
+    secrets:
+      - db_password
+    volumes:
+      - db-data:/var/lib/mysql  
+    networks:
+      - private
+    
+  frontend:
+    build:
+      context: frontend
+      target: development
+    ports:
+      - 3000:3000
+      - "3030:3030"
+    volumes:
+      - ./frontend/src:/code/src
+      - /code/node_modules
+    networks:
+      - public
+    depends_on:
+      - backend
+networks:
+  public:
+  private:
+volumes:
+  back-notused:
+  db-data:
+secrets:
+  db-password:
+    file: db/password.txt
+

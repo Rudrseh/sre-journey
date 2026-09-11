@@ -1,0 +1,43 @@
+name: Matrix Conditional Workflow
+
+on:
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    matrix-job:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+              number: [1, 2, 3]
+              letters: [a, b, c]
+              exclude:
+                - number: 2
+                  letters: b
+        timeout-minutes: 5
+
+        steps:
+            # step 1 Always run number 1 and letter a
+            - name: Print matrix values
+              run: |
+                echo "Number: ${{ matrix.number }}"
+                echo "Letter: ${{ matrix.letters }}"
+        
+
+            # Step 2 – run for every combo EXCEPT number=2 ∧ letter=b
+            - name: Run everywhere except 2b
+              if: ! ${{ matrix.number == 2 && matrix.letters == 'b' }}
+              run: |
+                echo "This step runs for ${{ matrix.number }} and ${{ matrix.letters }} except for 2b"
+
+    sleep-job:
+     runs-on: ubuntu-latest
+     steps:
+        - name: Sleep for 10 seconds(give time to be canceled)
+          run: sleep 100
+          timeout-minutes: 2
+          

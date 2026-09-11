@@ -1,0 +1,21 @@
+name: PR Example
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - master
+
+jobs:
+  example-pr-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print PR trigger details
+        run: |
+          echo "PR workflow triggered successfully"
+          echo "Event name: $GITHUB_EVENT_NAME"
+          echo "Base branch: $GITHUB_BASE_REF"
+          echo "Head branch: $GITHUB_HEAD_REF"

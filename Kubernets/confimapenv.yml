@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmapenv
+data:
+  username: k8s
+  access_level: "1"
+
+  

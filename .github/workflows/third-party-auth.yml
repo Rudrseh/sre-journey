@@ -1,0 +1,30 @@
+name: Third Party Auth
+
+on:
+  workflow_dispatch:
+   
+# Don't use static credentials in your GitHub Actions workflows. Use OIDC to authenticate to AWS from GitHub Actions. This is a more secure way to authenticate to AWS without using static credentials.
+jobs:
+  third-party-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Configure AWS Credentials using static key"
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+ 
+  # this is the best practice to use OIDC to authenticate to AWS from GitHub Actions. This is a more secure way to authenticate to AWS without using static credentials.
+  auth-to-aws-oidc:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: "Configure AWS Credentials - Action for GitHub Actions"
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::917774925227:role/github-actions-role
+          aws-region: us-east-1

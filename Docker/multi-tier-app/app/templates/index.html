@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    .visits { color: #555; margin-bottom: 20px; }
+    .note { padding: 8px; border-bottom: 1px solid #eee; }
+    input[type=text] { width: 70%; padding: 6px; }
+    button { padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Notes App</h1>
+  <p class="visits">Total visits (from Redis): <strong>{{ visits }}</strong></p>
+
+  <form action="/notes" method="post">
+    <input type="text" name="content" placeholder="Write a note..." required>
+    <button type="submit">Add</button>
+  </form>
+
+  <h3>Notes (from Postgres)</h3>
+  {% for note in notes %}
+    <div class="note">{{ note[1] }} <small>({{ note[2] }})</small></div>
+  {% else %}
+    <p>No notes yet.</p>
+  {% endfor %}
+</body>
+</html>
+

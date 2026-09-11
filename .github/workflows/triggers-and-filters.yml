@@ -1,0 +1,29 @@
+name: Triggers and Filters
+
+on: 
+    push:
+        branches:
+            - "Github-Actions/03-core-features/filters/*"
+
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+        paths:
+            - "Github-Actions/03-core-features/filters/*.md"
+            - "!Github-Actions/03-core-features/triggers/*.txt"
+
+   #  schedule:
+   #     - cron: '0 0 * * *'
+    workflow_dispatch:
+
+
+jobs:
+    trigger-and-filter-job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Run trigger and filter script
+              run: |
+                echo "======$GITHUB_EVENT_NAME======"
+                cat $GITHUB_EVENT_PATH

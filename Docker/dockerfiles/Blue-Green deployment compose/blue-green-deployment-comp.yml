@@ -1,0 +1,62 @@
+version: "3.9"
+services:
+  blue:
+    image: nginx:alpine
+    container_name: blue-app
+    restart: unless-stopped
+    environment:
+      APP_COLOR: blue
+    ports:
+      - "8081:80"
+    volumes:
+      - ./blue:/usr/share/nginx/html:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health.html"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  green:
+    image: nginx:alpine
+    container_name: green-app
+    restart: unless-stopped
+    environment:
+      APP_COLOR: green
+    ports:
+      - "8082:80"
+    volumes:
+      - ./green:/usr/share/nginx/html:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health.html"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  router:
+    image: nginx:alpine
+    container_name: blue-green-router
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    env_file:
+      - ./.env
+    environment:
+      ACTIVE_COLOR: ${ACTIVE_COLOR:-blue}
+      FALLBACK_COLOR: ${FALLBACK_COLOR:-green}
+    volumes:
+      - ./nginx/start-router.sh:/start-router.sh:ro
+    command: ["/bin/sh", "/start-router.sh"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health.html"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      blue:
+        condition: service_healthy
+      green:
+        condition: service_healthy
+    
