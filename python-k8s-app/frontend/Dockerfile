@@ -1,4 +1,4 @@
---------Stage 1: Build the static React bundle --------------
+#--------Stage 1: Build the static React bundle --------------
 FROM node:20-alpine AS build
 
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN npm ci
 COPY . .
 RUN npm run build 
 
-----------Stage 2: Serve it with Nginx---------------
+#----------Stage 2: Serve it with Nginx---------------
 FROM nginx: 1.27-alpine
 
 # Remove the default nginx welcome page 
